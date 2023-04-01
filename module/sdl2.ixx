@@ -7,6 +7,7 @@ module;
 
 #include <math.h>
 #include <process.h>
+#include <stdint.h>
 
 #include <intrin.h>
 #include <intrin0.h>
