@@ -458,15 +458,16 @@
     <ClCompile Include="..\src\video\yuv2rgb\yuv_rgb.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="sdl2-gmf.h" />
     <ClInclude Include="sdl2-x.h" />
     <ClInclude Include="sdl2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sdl2-macros_global.ixx">
-      <ModuleOutputFile>$(BmiCacheDir)$(ProjectName)-macros_global.ifc</ModuleOutputFile>
+    <ClCompile Include="sdl2-global-macros.ixx">
+      <ModuleOutputFile>$(BmiCacheDir)$(ProjectName)-global_macros.ifc</ModuleOutputFile>
     </ClCompile>
-    <ClCompile Include="sdl2-macros_sdl.ixx">
-      <ModuleOutputFile>$(BmiCacheDir)$(ProjectName)-macros_sdl.ifc</ModuleOutputFile>
+    <ClCompile Include="sdl2-with-macros.ixx">
+      <ModuleOutputFile>$(BmiCacheDir)$(ProjectName)-with_macros.ifc</ModuleOutputFile>
     </ClCompile>
     <ClCompile Include="sdl2.ixx">
       <ModuleOutputFile>$(BmiCacheDir)$(ProjectName).ifc</ModuleOutputFile>

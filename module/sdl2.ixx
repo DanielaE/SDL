@@ -1,25 +1,8 @@
-module;
-
-#ifdef _WIN32
-#include <winsdkver.h>
-
-#include <windows.h>
-
-#include <math.h>
-#include <process.h>
-#include <stdint.h>
-
-#include <intrin.h>
-#include <intrin0.h>
-#else
-// whatever it takes
-#endif
-
 export module sdl;
 
-export import :macros_sdl;
+export import :with_macros;
 #ifndef SDL2_NO_GLOBAL_DEFINITIONS
-export import :macros_global;
+export import :global_macros;
 #endif
 
 #ifdef _MSC_VER
@@ -30,6 +13,3 @@ export import :macros_global;
 #	pragma comment(lib, "winmm.lib")
 #endif
 
-export {
-#include "sdl2.h"
-}

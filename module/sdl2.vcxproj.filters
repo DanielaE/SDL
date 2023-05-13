@@ -849,6 +849,9 @@
     <ClInclude Include="..\src\SDL_log_c.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="sdl2-gmf.h" />
+    <ClInclude Include="sdl2-x.h" />
+    <ClInclude Include="sdl2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\audio\SDL_audio.c">
@@ -1397,5 +1400,8 @@
     <ClCompile Include="..\src\audio\wasapi\SDL_wasapi.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="sdl2-global-macros.ixx" />
+    <ClCompile Include="sdl2-with-macros.ixx" />
+    <ClCompile Include="sdl2.ixx" />
   </ItemGroup>
 </Project>
