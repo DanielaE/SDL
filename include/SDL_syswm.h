@@ -41,7 +41,13 @@
  *  an unhandled window event occurs.  This event is ignored by default, but
  *  you can enable it with SDL_EventState().
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
 struct SDL_SysWMinfo;
+#ifdef __cplusplus
+}
+#endif
 
 #if !defined(SDL_PROTOTYPES_ONLY)
 

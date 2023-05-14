@@ -138,7 +138,11 @@
 #if defined(_MSC_VER)
 #define SDL_FORCE_INLINE __forceinline
 #elif ( (defined(__GNUC__) && (__GNUC__ >= 4)) || defined(__clang__) )
+#ifdef SDL_BUILD_MODULE
+#define SDL_FORCE_INLINE __attribute__((always_inline)) __inline__
+#else
 #define SDL_FORCE_INLINE __attribute__((always_inline)) static __inline__
+#endif
 #else
 #define SDL_FORCE_INLINE static SDL_INLINE
 #endif

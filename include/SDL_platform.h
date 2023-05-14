@@ -226,6 +226,8 @@
 #define __3DS__ 1
 #endif
 
+#ifndef SDL_BUILD_MODULE
+
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
@@ -256,6 +258,7 @@ extern DECLSPEC const char * SDLCALL SDL_GetPlatform (void);
 #endif
 #include "close_code.h"
 
+#endif
 #endif /* SDL_platform_h_ */
 
 /* vi: set ts=4 sw=4 expandtab: */

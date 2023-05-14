@@ -376,7 +376,14 @@ typedef uint64_t Uint64;
 #ifndef SDL_COMPILE_TIME_ASSERT
 #if defined(__cplusplus)
 #if (__cplusplus >= 201103L)
+#if defined(SDL_BUILD_MODULE) && defined(__clang__)
+#define SDL_NO_STATIC_ASSERT
+#endif
+#ifdef SDL_NO_STATIC_ASSERT
+#define SDL_COMPILE_TIME_ASSERT(name, x) using SDL_void_##name = void
+#else
 #define SDL_COMPILE_TIME_ASSERT(name, x)  static_assert(x, #x)
+#endif
 #endif
 #elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 #define SDL_COMPILE_TIME_ASSERT(name, x) _Static_assert(x, #x)
