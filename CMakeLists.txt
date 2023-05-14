@@ -2,8 +2,16 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
   message(FATAL_ERROR "Prevented in-tree build. Please create a build directory outside of the SDL source code and run \"cmake -S ${CMAKE_SOURCE_DIR} -B .\" from there")
 endif()
 
-cmake_minimum_required(VERSION 3.0.0)
-project(SDL2 C CXX)
+cmake_minimum_required(VERSION 3.26)
+project(SDL2
+        DESCRIPTION "Modularized SDL2 for C++20"
+        HOMEPAGE_URL "https://github.com/DanielaE/SDL/tree/module"
+        LANGUAGES C CXX
+)
+
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API "2182bf5c-ef0d-489a-91da-49dbc3090d2a")
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP 1)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   set(SDL2_SUBPROJECT OFF)
@@ -401,7 +409,7 @@ if (NOT DEFINED SDL_SHARED_ENABLED_BY_DEFAULT)
 
   if (NOT DEFINED BUILD_SHARED_LIBS)
     # No preference? Build both, just like the AC/AM configure
-    set(SDL_SHARED_ENABLED_BY_DEFAULT ON)
+    set(SDL_SHARED_ENABLED_BY_DEFAULT OFF)
 
   elseif (BUILD_SHARED_LIBS)
     # In this case, we assume the user wants a shared lib and don't build
@@ -412,7 +420,7 @@ if (NOT DEFINED SDL_SHARED_ENABLED_BY_DEFAULT)
 endif()
 
 if (NOT DEFINED SDL_TEST_ENABLED_BY_DEFAULT)
-  set(SDL_TEST_ENABLED_BY_DEFAULT ON)
+  set(SDL_TEST_ENABLED_BY_DEFAULT OFF)
 endif()
 
 set(LONGESTOPTIONNAME 0)  # set_option and friends will change this.
@@ -430,8 +438,10 @@ endforeach()
 
 # Allow some projects to be built conditionally.
 set_option(SDL2_DISABLE_SDL2MAIN   "Disable building/installation of SDL2main" OFF)
-set_option(SDL2_DISABLE_INSTALL    "Disable installation of SDL2" ${SDL2_SUBPROJECT})
-set_option(SDL2_DISABLE_UNINSTALL  "Disable uninstallation of SDL2" OFF)
+#set_option(SDL2_DISABLE_INSTALL    "Disable installation of SDL2" ${SDL2_SUBPROJECT})
+#set_option(SDL2_DISABLE_UNINSTALL  "Disable uninstallation of SDL2" OFF)
+set_option(SDL2_DISABLE_INSTALL    "Disable installation of SDL2" ON)
+set_option(SDL2_DISABLE_UNINSTALL  "Disable uninstallation of SDL2" ON)
 
 option_string(SDL_ASSERTIONS "Enable internal sanity checks (auto/disabled/release/enabled/paranoid)" "auto")
 #set_option(SDL_DEPENDENCY_TRACKING "Use gcc -MMD -MT dependency tracking" ON)
@@ -566,6 +576,9 @@ file(GLOB SOURCE_FILES
   ${SDL2_SOURCE_DIR}/src/timer/*.c
   ${SDL2_SOURCE_DIR}/src/video/*.c
   ${SDL2_SOURCE_DIR}/src/video/yuv2rgb/*.c)
+
+set(module_dir module)
+file(GLOB importable_files ${SDL2_SOURCE_DIR}/${module_dir}/*.ixx)
 
 
 set(SDL_DEFAULT_ASSERT_LEVEL_CONFIGURED 1)
@@ -3346,10 +3359,23 @@ if(SDL_SHARED)
 endif()
 
 if(SDL_STATIC)
-  add_library(SDL2-static STATIC ${SOURCE_FILES})
+  add_library(SDL2-static STATIC)
+  target_sources(SDL2-static
+    PUBLIC
+      FILE_SET modules TYPE CXX_MODULES
+        BASE_DIRS ${module_dir}
+        FILES ${importable_files}
+    PRIVATE
+      ${SOURCE_FILES}
+  )
   add_dependencies(SDL2-static sdl_headers_copy)
   # alias target for in-tree builds
   add_library(SDL2::SDL2-static ALIAS SDL2-static)
+  target_compile_features(SDL2-static PUBLIC cxx_std_20)
+  if (MSVC)
+    target_compile_options(SDL2-static PRIVATE /dxifcInlineFunctions-)
+  endif()
+
   set_target_properties(SDL2-static PROPERTIES
     OUTPUT_NAME "${sdl_static_libname}"
     POSITION_INDEPENDENT_CODE "${SDL_STATIC_PIC}")
@@ -3357,8 +3383,8 @@ if(SDL_STATIC)
   # TODO: Win32 platforms keep the same suffix .lib for import and static
   # libraries - do we need to consider this?
   target_link_libraries(SDL2-static PRIVATE ${EXTRA_LIBS} ${EXTRA_LDFLAGS})
-  target_include_directories(SDL2-static PUBLIC
-      "$<BUILD_INTERFACE:${SDL2_BINARY_DIR}/include>"
+  target_include_directories(SDL2-static PRIVATE
+      "$<BUILD_INTERFACE:${SDL2_BINARY_DIR}>/include"
       "$<BUILD_INTERFACE:${SDL2_BINARY_DIR}/include-config-$<LOWER_CASE:$<CONFIG>>>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>")
