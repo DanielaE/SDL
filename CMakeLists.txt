@@ -3359,8 +3359,8 @@ if(SDL_SHARED)
 endif()
 
 if(SDL_STATIC)
-  add_library(SDL2-static STATIC)
-  target_sources(SDL2-static
+  add_library(sdl STATIC)
+  target_sources(sdl
     PUBLIC
       FILE_SET modules TYPE CXX_MODULES
         BASE_DIRS ${module_dir}
@@ -3368,34 +3368,34 @@ if(SDL_STATIC)
     PRIVATE
       ${SOURCE_FILES}
   )
-  add_dependencies(SDL2-static sdl_headers_copy)
+  add_dependencies(sdl sdl_headers_copy)
   # alias target for in-tree builds
-  add_library(SDL2::SDL2-static ALIAS SDL2-static)
-  target_compile_features(SDL2-static PUBLIC cxx_std_20)
-  if (MSVC)
-    target_compile_options(SDL2-static PRIVATE /dxifcInlineFunctions-)
+  add_library(SDL2::sdl ALIAS sdl)
+  target_compile_features(sdl PUBLIC cxx_std_20)
+
+  set_target_properties(sdl PROPERTIES
+    OUTPUT_NAME "sdl"
+    POSITION_INDEPENDENT_CODE "${SDL_STATIC_PIC}")
+  target_compile_definitions(sdl PRIVATE SDL_STATIC_LIB)
+
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # I do mean C++20
+    target_compile_options(sdl PUBLIC -fsized-deallocation)
   endif()
 
-  set_target_properties(SDL2-static PROPERTIES
-    OUTPUT_NAME "${sdl_static_libname}"
-    POSITION_INDEPENDENT_CODE "${SDL_STATIC_PIC}")
-  target_compile_definitions(SDL2-static PRIVATE SDL_STATIC_LIB)
   # TODO: Win32 platforms keep the same suffix .lib for import and static
   # libraries - do we need to consider this?
-  target_link_libraries(SDL2-static PRIVATE ${EXTRA_LIBS} ${EXTRA_LDFLAGS})
-  target_include_directories(SDL2-static PRIVATE
+  target_link_libraries(sdl PRIVATE ${EXTRA_LIBS} ${EXTRA_LDFLAGS})
+  target_include_directories(sdl PRIVATE
       "$<BUILD_INTERFACE:${SDL2_BINARY_DIR}>/include"
       "$<BUILD_INTERFACE:${SDL2_BINARY_DIR}/include-config-$<LOWER_CASE:$<CONFIG>>>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
       "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>")
   # This picks up all the compiler options and such we've accumulated up to here.
-  target_link_libraries(SDL2-static PRIVATE $<BUILD_INTERFACE:sdl-build-options>)
-  if(NOT ANDROID)
-    set_target_properties(SDL2-static PROPERTIES DEBUG_POSTFIX "${SDL_CMAKE_DEBUG_POSTFIX}")
-  endif()
+  target_link_libraries(sdl PRIVATE $<BUILD_INTERFACE:sdl-build-options>)
   # Use `Compatible Interface Properties` to allow consumers to enforce a shared/static library
-  set_property(TARGET SDL2-static PROPERTY INTERFACE_SDL2_SHARED FALSE)
-  set_property(TARGET SDL2-static APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL2_SHARED)
+  set_property(TARGET sdl PROPERTY INTERFACE_SDL2_SHARED FALSE)
+  set_property(TARGET sdl APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL2_SHARED)
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSDL_BUILD_MAJOR_VERSION=${SDL_MAJOR_VERSION}")
@@ -3436,7 +3436,7 @@ if(NOT SDL2_DISABLE_INSTALL)
   endif()
 
   if(SDL_STATIC)
-    install(TARGETS SDL2-static EXPORT SDL2staticTargets
+    install(TARGETS sdl EXPORT SDL2staticTargets
       LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
       ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
       RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
@@ -3591,6 +3591,6 @@ endif()
 set(CMAKE_OBJC_FLAGS "${CMAKE_OBJC_FLAGS} ${CMAKE_C_FLAGS}")
 
 # Make sure SDL2::SDL2 always exists
-if(TARGET SDL2::SDL2-static AND NOT TARGET SDL2::SDL2)
-  add_library(SDL2::SDL2 ALIAS SDL2-static)
+if(TARGET SDL2::sdl AND NOT TARGET SDL2::SDL2)
+  add_library(SDL2::SDL2 ALIAS sdl)
 endif()
