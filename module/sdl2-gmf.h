@@ -1,11 +1,12 @@
 #define SDL_BUILD_MODULE
+
 #include "SDL_config.h"
 #undef SDL_platform_h_
 
 #if __has_include(<cxxabi.h>)
 #  include <cxxabi.h>
 #endif
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(_MSC_VER) || defined(__MINGW64__)
 #  include <intrin.h>
 #endif
 #ifdef _WIN32
@@ -94,21 +95,4 @@ void *alloca(unsigned);
 # else
 char *alloca();
 # endif
-#endif
-
-#if 0
-#ifdef _WIN32
-#include <winsdkver.h>
-
-#include <windows.h>
-
-#include <math.h>
-#include <process.h>
-#include <stdint.h>
-
-#include <intrin.h>
-#include <intrin0.h>
-#else
-// whatever it takes
-#endif
 #endif
