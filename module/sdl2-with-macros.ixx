@@ -1,20 +1,20 @@
 module;
 #ifdef __MINGW64__
-#include <cwchar>
-#include <compare>
+# include <cwchar> // work around ODR problems with the C standard library
 #endif
 
 #include "sdl2-gmf.h"
 
 #ifdef __clang__
-#include "sdl2.h"
+# include "sdl2.h"
 #endif
 
 export module sdl : with_macros;
 
 #ifndef __clang__
+
 export {
-#include "sdl2.h"
+# include "sdl2.h"
 }
 
 #else
