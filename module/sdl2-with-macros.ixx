@@ -52,10 +52,14 @@ export using ::SDL_GetNumVideoDisplays;
 
 namespace {
 static constexpr auto SDL_FLT_EPSILON_materialized = SDL_FLT_EPSILON;
+static constexpr auto SDL_BIG_ENDIAN_materialized = SDL_BIG_ENDIAN;
 }
 #undef FLT_EPSILON
 #undef SDL_FLT_EPSILON
 #define SDL_FLT_EPSILON SDL_FLT_EPSILON_materialized
+#undef BIG_ENDIAN
+#undef SDL_BIG_ENDIAN
+#define SDL_BIG_ENDIAN SDL_BIG_ENDIAN_materialized
 
 export namespace sdl {
 #define X(x) constexpr inline auto x = SDL_##x;
