@@ -3384,7 +3384,7 @@ if(SDL_STATIC)
 
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # I do mean C++20
-    target_compile_options(sdl PUBLIC -fsized-deallocation -faligned-allocation -fchar8_t)
+    target_compile_options(sdl PUBLIC -fsized-deallocation -faligned-allocation)
   elseif (MSVC)
   # I do mean C++23
     target_compile_options(sdl PUBLIC /utf-8 /Zc:__cplusplus /Zc:throwingNew /Zc:inline /Zc:externConstexpr /Zc:templateScope /Zc:checkGwOdr /Zc:enumTypes)
